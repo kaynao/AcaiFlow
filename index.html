@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AçaíFlow - Produção de Casquinhas & Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- External / Internal CSS Stylesheet reference style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full bg-white text-slate-900 flex flex-col justify-between selection:bg-purple-600 selection:text-white overflow-x-hidden">
+
+    <!-- Header Navigation -->
+    <header class="w-full bg-slate-900 text-white py-3.5 px-4 sm:px-6 sticky top-0 z-40 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-900/50">
+                <i class="fa-solid fa-ice-cream text-amber-200 text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base sm:text-lg tracking-tight flex items-center space-x-2">
+                    <span>AçaíFlow</span>
+                    <span class="text-[10px] bg-purple-500/30 text-purple-200 border border-purple-400/30 px-2 py-0.5 rounded-full font-medium">Casquinhas</span>
+                </h1>
+                <p class="text-xs text-slate-400 hidden sm:block">↑ Concluir | ↓ Voltar | → Próximo | ← Anterior</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <!-- Toggle View Buttons -->
+            <button onclick="switchView('flashcards')" id="btn-view-flashcards" class="px-3.5 py-2 bg-purple-600 text-white text-xs sm:text-sm font-semibold rounded-xl transition shadow flex items-center space-x-1.5">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Produção</span>
+            </button>
+            <button onclick="switchView('dashboard')" id="btn-view-dashboard" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold rounded-xl transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="openAddModal()" class="w-9 h-9 bg-purple-600 hover:bg-purple-500 text-white rounded-xl flex items-center justify-center transition shadow">
+                <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container View: Flashcards / Production -->
+    <main id="view-flashcards" class="flex-1 flex flex-col items-center justify-center p-4 max-w-lg w-full mx-auto relative">
+        
+        <!-- Stats & History Bar -->
+        <div class="w-full flex items-center justify-between mb-4 px-1">
+            <div class="flex items-center space-x-2">
+                <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    <span>Prontas: <strong id="stat-done" class="text-emerald-800">0</strong></span>
+                </span>
+                <span class="px-3 py-1.5 bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold rounded-xl flex items-center space-x-1.5">
+                    <i class="fa-solid fa-clock text-slate-500"></i>
+                    <span>Na Fila: <strong id="stat-remaining" class="text-slate-900">0</strong></span>
+                </span>
+            </div>
+            <button onclick="resetDeck()" title="Reiniciar Fila" class="text-slate-600 hover:text-slate-900 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5 font-medium">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Reiniciar</span>
+            </button>
+        </div>
+
+        <!-- Card Arena -->
+        <div id="card-arena" class="w-full h-[410px] sm:h-[430px] relative flex items-center justify-center perspective-1000">
+            <!-- Flashcards injected dynamically by script.js -->
+        </div>
+
+        <!-- Control Buttons & Visual Hint -->
+        <div class="w-full mt-4 flex flex-col items-center space-y-3">
+            <div class="flex items-center justify-between w-full px-2 max-w-sm">
+                <button onclick="triggerSwipe('left')" title="Anterior (Esquerda)" class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 border border-slate-200 text-slate-700 flex items-center justify-center shadow transition">
+                    <i class="fa-solid fa-arrow-left text-base"></i>
+                </button>
+                <div class="flex space-x-2">
+                    <button onclick="triggerSwipe('down')" title="Desfazer/Último (Baixo)" class="w-12 h-12 rounded-2xl bg-amber-50 hover:bg-amber-100 active:scale-95 border border-amber-200 text-amber-700 flex items-center justify-center shadow transition">
+                        <i class="fa-solid fa-arrow-down text-base"></i>
+                    </button>
+                    <button onclick="triggerSwipe('up')" title="Concluir Pedido (Cima)" class="px-5 h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-md shadow-emerald-600/30 transition">
+                        <i class="fa-solid fa-check text-base"></i>
+                        <span>Concluir</span>
+                    </button>
+                </div>
+                <button onclick="triggerSwipe('right')" title="Próximo (Direita)" class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 border border-slate-200 text-slate-700 flex items-center justify-center shadow transition">
+                    <i class="fa-solid fa-arrow-right text-base"></i>
+                </button>
+            </div>
+            <p class="text-[11px] text-slate-500 text-center font-medium">
+                📱 <span class="text-slate-700">Gestos:</span> ↑ Concluir | ↓ Voltar | → Próximo | ← Anterior
+            </p>
+        </div>
+    </main>
+
+    <!-- Main Container View: Dashboard de Vendas -->
+    <main id="view-dashboard" class="flex-1 hidden flex-col p-4 sm:p-6 max-w-3xl w-full mx-auto relative overflow-y-auto">
+        <div class="w-full space-y-6 pb-8">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-xl font-black text-slate-900">Dashboard de Vendas & Produção</h2>
+                    <p class="text-xs text-slate-500">Métricas em tempo real dos pedidos de casquinhas</p>
+                </div>
+                <button onclick="clearDashboardHistory()" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Zerar Histórico</span>
+                </button>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Concluídos</span>
+                    <h3 id="dash-total-done" class="text-2xl font-black text-purple-600 mt-1">0</h3>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Casquinhas Comuns</span>
+                    <h3 id="dash-comum" class="text-2xl font-black text-slate-900 mt-1">0</h3>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Casquinhas Recheadas</span>
+                    <h3 id="dash-recheada" class="text-2xl font-black text-amber-600 mt-1">0</h3>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Fila Restante</span>
+                    <h3 id="dash-remaining" class="text-2xl font-black text-indigo-600 mt-1">0</h3>
+                </div>
+            </div>
+
+            <!-- Breakdown by Flavor & Syrup -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Flavors breakdown -->
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-3">
+                    <h4 class="font-bold text-sm text-slate-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-ice-cream text-purple-600"></i>
+                        <span>Sabores da Base (Concluídos)</span>
+                    </h4>
+                    <div class="space-y-2" id="flavor-stats-container">
+                        <!-- Populated by script.js -->
+                    </div>
+                </div>
+
+                <!-- Syrups & Fillings breakdown -->
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-3">
+                    <h4 class="font-bold text-sm text-slate-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-jar text-amber-600"></i>
+                        <span>Caldas e Recheios Populares</span>
+                    </h4>
+                    <div class="space-y-2" id="syrup-stats-container">
+                        <!-- Populated by script.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Log Table -->
+            <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-3">
+                <h4 class="font-bold text-sm text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-clock-rotate-left text-purple-600"></i>
+                    <span>Histórico de Pedidos Finalizados Hoje</span>
+                </h4>
+                <div id="history-log-list" class="overflow-y-auto max-h-60 space-y-2 pr-1">
+                    <!-- Populated by script.js -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Adicionar Novo Pedido -->
+    <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-receipt text-purple-600"></i>
+                    <span>Novo Pedido de Casquinha</span>
+                </h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="add-form" onsubmit="handleAddNewCard(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Cliente *</label>
+                    <input type="text" id="new-client" required placeholder="Ex: Carlos Eduardo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-purple-600 transition">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Casquinha *</label>
+                        <select id="new-type" onchange="toggleFillingField()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-600 transition">
+                            <option value="Casquinha Comum">Casquinha Comum</option>
+                            <option value="Casquinha Recheada">Casquinha Recheada</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sabor da Base *</label>
+                        <select id="new-flavor" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-600 transition">
+                            <option value="Açaí">Açaí</option>
+                            <option value="Mista">Mista</option>
+                            <option value="Creme">Creme</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Calda *</label>
+                        <select id="new-syrup" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-600 transition">
+                            <option value="Chocolate">Chocolate</option>
+                            <option value="Morango">Morango</option>
+                        </select>
+                    </div>
+                    <div id="filling-container" class="hidden">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Recheio *</label>
+                        <select id="new-filling" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-600 transition">
+                            <option value="Nutella">Nutella</option>
+                            <option value="Morango">Morango</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observações (Opcional)</label>
+                    <textarea id="new-obs" rows="2" placeholder="Ex: Sem calda, extra crocante..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-purple-600 transition resize-none"></textarea>
+                </div>
+                <div class="flex items-center justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 transition">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 transition">Adicionar Pedido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <div id="toast-icon" class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <span id="toast-message" class="text-sm font-medium">Ação realizada com sucesso!</span>
+    </div>
+
+    <!-- Embedded / Linked JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
