@@ -1,31 +1,51 @@
-/* Custom 3D Perspective and Flashcard Transitions */
-.perspective-1000 {
-perspective: 1000px;
-}
-.transform-style-3d {
-transform-style: preserve-3d;
-}
-.backface-hidden {
-backface-visibility: hidden;
--webkit-backface-visibility: hidden;
-}
-.rotate-y-180 {
-transform: rotateY(180deg);
+/* Configuração global para evitar saltos e rolagem indesejada no mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
-/* Custom scrollbars */
+body {
+  touch-action: pan-y; /* Permite rolar apenas verticalmente se necessário, mas prioriza os gestos */
+  overscroll-behavior-y: none; /* Evita o efeito "bounce" (puxar a página para baixo) do navegador no topo */
+}
+
+/* Custom 3D Perspective and Flashcard Transitions */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Custom scrollbars otimizados para toque (mais largos e fáceis de deslizar) */
 ::-webkit-scrollbar {
-width: 6px;
-height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-background: #f1f5f9;
-border-radius: 8px;
+  background: #f8fafc;
+  border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb {
-background: #cbd5e1;
-border-radius: 8px;
+  background: #cbd5e1;
+  border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-background: #94a3b8;
+  background: #94a3b8;
+}
+
+/* Ajustes responsivos para garantir que o card preencha bem a tela do celular */
+@media (max-width: 640px) {
+  #card-container {
+    width: 92vw !important;
+    max-width: 380px;
+    height: 400px !important;
+  }
 }
