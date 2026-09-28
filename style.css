@@ -1,0 +1,98 @@
+/* Correções globais para toque e comportamento mobile (iOS / Android) */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  touch-action: pan-y;
+  overscroll-behavior-y: none;
+}
+
+/* Configurações 3D */
+.perspective {
+  perspective: 1200px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Cores e Gradientes Correspondentes aos Sabores */
+.sabor-acai {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+}
+.sabor-acai #card-tipo {
+  background-color: #7e22ce !important;
+  color: #ffffff !important;
+}
+
+.sabor-mista {
+  background: linear-gradient(135deg, #faf5ff 50%, #fffbeb 50%) !important;
+  border-color: #fef08a !important;
+}
+.sabor-mista #card-tipo {
+  background-color: #b45309 !important;
+  color: #ffffff !important;
+}
+
+.sabor-creme {
+  background-color: #fffbeb !important;
+  border-color: #fef3c7 !important;
+}
+.sabor-creme #card-tipo {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+}
+
+/* Animação do Modal */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-up {
+  animation: scaleUp 0.2s ease-out forwards;
+}
+
+/* Otimização de Scrollbars para todas as plataformas */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* BREAKPOINTS RESPONSIVOS ESPECÍFICOS */
+
+/* Celulares Pequenos (iPhone SE, Androids compactos) */
+@media (max-width: 380px) {
+  #card-container {
+    width: 90vw !important;
+    height: 360px !important;
+  }
+}
+
+/* Tablets e iPads */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #card-container {
+    width: 440px !important;
+    height: 480px !important;
+  }
+}
+
+/* Desktops e Telas Grandes */
+@media (min-width: 1025px) {
+  #card-container {
+    width: 460px !important;
+    height: 480px !important;
+  }
+}

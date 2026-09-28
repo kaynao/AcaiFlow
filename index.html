@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Açaiteria - Flashcards & Vendas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white font-['Poppins'] text-gray-800 h-screen flex flex-col overflow-hidden select-none">
+
+    <!-- CABEÇALHO RESPONSIVO -->
+    <header class="bg-purple-900 text-white px-4 py-3 sm:px-6 shadow-md flex justify-between items-center z-20 shrink-0">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <i class="fa-solid fa-ice-cream text-pink-400 text-xl sm:text-2xl"></i>
+            <h1 class="font-bold text-base sm:text-xl tracking-wide">Produção Açaí</h1>
+        </div>
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button id="nav-producao" onclick="mudarAba('producao')" class="bg-purple-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition active:scale-95 shadow flex items-center">
+                <i class="fa-solid fa-layer-group mr-1.5"></i> Pedidos
+            </button>
+            <button id="nav-dashboard" onclick="mudarAba('dashboard')" class="bg-purple-950 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition active:scale-95 opacity-80 flex items-center">
+                <i class="fa-solid fa-chart-pie mr-1.5"></i> Vendas
+            </button>
+            <button onclick="abrirModalNovo()" class="bg-pink-600 hover:bg-pink-500 text-white w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow transition active:scale-95" title="Novo Pedido">
+                <i class="fa-solid fa-plus text-sm sm:text-base"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL (ABAS) -->
+    <main class="flex-1 relative overflow-hidden flex flex-col">
+
+        <!-- ABA 1: TELA DE PRODUÇÃO (FLASHCARDS RESPONSIVOS) -->
+        <section id="aba-producao" class="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-6 overflow-y-auto">
+            
+            <!-- Indicador de Status / Fila -->
+            <div class="flex justify-between w-full max-w-sm sm:max-w-md md:max-w-lg mb-2 sm:mb-3 px-1 text-xs sm:text-sm font-semibold text-gray-500 shrink-0">
+                <span id="contador-fila">Pedido 0 de 0</span>
+                <span id="status-historico" class="text-purple-600 font-bold hidden"><i class="fa-solid fa-rotate-left mr-1"></i> Visualizando Concluído</span>
+            </div>
+
+            <!-- CARD CONTAINER RESPONSIVO -->
+            <div class="relative w-full max-w-sm sm:max-w-md md:max-w-lg h-[390px] sm:h-[440px] md:h-[460px] cursor-pointer perspective shrink-0" id="card-container">
+                <div id="flashcard" class="w-full h-full relative preserve-3d transition-transform duration-300 shadow-xl rounded-3xl border border-gray-100 flex flex-col justify-between p-5 sm:p-7">
+                    
+                    <!-- TOPO DO CARD -->
+                    <div class="flex justify-between items-center z-10">
+                        <span id="badge-obs" class="hidden bg-amber-100 text-amber-800 text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full shadow-sm animate-pulse flex items-center">
+                            <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Com Observação
+                        </span>
+                        <span id="badge-tipo-topo" class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-gray-400 ml-auto">Fila de Produção</span>
+                    </div>
+
+                    <!-- CENTRO DO CARD -->
+                    <div class="my-auto text-center space-y-3 sm:space-y-4 z-10">
+                        <div id="card-tipo" class="inline-block bg-purple-100 text-purple-900 font-extrabold text-lg sm:text-2xl px-4 py-1.5 sm:py-2 rounded-xl shadow-inner">
+                            Casquinha Comum
+                        </div>
+
+                        <div class="space-y-1.5 text-sm sm:text-lg font-medium text-gray-700 pt-1">
+                            <p>Sabor: <strong id="card-sabor" class="text-gray-900 font-bold">Açaí</strong></p>
+                            <p>Calda: <strong id="card-calda" class="text-gray-900 font-bold">Chocolate</strong></p>
+                            <p id="wrapper-recheio" class="hidden">Recheio: <strong id="card-recheio" class="text-pink-600 font-bold">Nutella</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- PARTE INFERIOR: CLIENTE -->
+                    <div class="text-center z-10 pt-3 border-t border-black/5">
+                        <span class="block text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-gray-400">Cliente</span>
+                        <h2 id="card-cliente" class="text-2xl sm:text-4xl font-black tracking-tight text-gray-900 truncate mt-0.5">Mariana Souza</h2>
+                        <p class="text-[10px] sm:text-xs text-gray-400 mt-1"><i class="fa-solid fa-hand text-purple-600"></i> Deslize ou toque para gerenciar</p>
+                    </div>
+
+                    <!-- VERSO DO CARTÃO (OBSERVAÇÕES) -->
+                    <div id="verso-obs" class="absolute inset-0 bg-gray-900/90 text-white rounded-3xl p-6 flex flex-col justify-center items-center text-center opacity-0 pointer-events-none transition-opacity duration-200 z-20">
+                        <i class="fa-solid fa-comment-dots text-pink-400 text-3xl sm:text-4xl mb-3"></i>
+                        <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-300 mb-1">Observações do Pedido</h3>
+                        <p id="texto-observacao" class="text-base sm:text-xl font-medium text-white italic px-4">"Sem amendoim, por favor"</p>
+                        <span class="text-[11px] sm:text-xs text-gray-400 mt-6"><i class="fa-solid fa-arrow-up"></i> Arraste para cima para concluir</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLES TÁTEIS RÁPIDOS -->
+            <div class="flex justify-center items-center space-x-4 sm:space-x-6 mt-4 sm:mt-5 w-full max-w-sm sm:max-w-md shrink-0">
+                <button onclick="navegarEsquerda()" class="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 shadow transition active:scale-95 text-base sm:text-lg" title="Anterior">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button onclick="concluirPedido()" class="px-6 py-3 sm:px-8 sm:py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center space-x-2 transition active:scale-95">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Concluir Pedido</span>
+                </button>
+                <button onclick="navegarDireita()" class="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 shadow transition active:scale-95 text-base sm:text-lg" title="Próximo">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ABA 2: DASHBOARD DE VENDAS RESPONSIVO -->
+        <section id="aba-dashboard" class="absolute inset-0 bg-gray-50 overflow-y-auto p-4 sm:p-6 hidden">
+            <div class="max-w-md sm:max-w-xl md:max-w-2xl mx-auto space-y-4 sm:space-y-5 pb-16">
+                <div class="flex justify-between items-center bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-gray-900">Resumo de Produção</h2>
+                        <p class="text-xs sm:text-sm text-gray-500">Métricas atualizadas em tempo real</p>
+                    </div>
+                    <button onclick="limparHistorico()" class="text-xs sm:text-sm bg-red-50 text-red-600 font-semibold px-3 py-2 rounded-xl border border-red-100 hover:bg-red-100 transition">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Limpar Dados
+                    </button>
+                </div>
+
+                <!-- CARDS DE MÉTRICAS (KPIS) -->
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                        <span class="text-xs font-semibold text-gray-400 uppercase">Concluídos Hoje</span>
+                        <span id="kpi-total" class="text-3xl sm:text-4xl font-black text-purple-900 mt-1">0</span>
+                    </div>
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                        <span class="text-xs font-semibold text-gray-400 uppercase">Recheadas</span>
+                        <span id="kpi-recheadas" class="text-3xl sm:text-4xl font-black text-pink-600 mt-1">0</span>
+                    </div>
+                </div>
+
+                <!-- DISTRIBUIÇÃO POR SABOR -->
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                    <h3 class="text-sm sm:text-base font-bold text-gray-800"><i class="fa-solid fa-ice-cream text-purple-600 mr-2"></i> Sabores de Base</h3>
+                    <div class="space-y-2.5 text-sm sm:text-base">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Açaí Puro</span>
+                            <span id="stat-acai" class="font-bold bg-purple-100 text-purple-800 px-3 py-0.5 rounded-full text-xs sm:text-sm">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Mista (Açaí + Creme)</span>
+                            <span id="stat-mista" class="font-bold bg-amber-100 text-amber-800 px-3 py-0.5 rounded-full text-xs sm:text-sm">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Creme</span>
+                            <span id="stat-creme" class="font-bold bg-gray-100 text-gray-800 px-3 py-0.5 rounded-full text-xs sm:text-sm">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTÓRICO DE PEDIDOS CONCLUÍDOS -->
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                    <h3 class="text-sm sm:text-base font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-purple-600 mr-2"></i> Pedidos Finalizados</h3>
+                    <div id="lista-historico" class="space-y-2 max-h-56 sm:max-h-72 overflow-y-auto pr-1">
+                        <p class="text-xs sm:text-sm text-gray-400 text-center py-6">Nenhum pedido concluído ainda hoje.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE NOVO PEDIDO RESPONSIVO -->
+    <div id="modal-novo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl w-full max-w-sm sm:max-w-md p-6 sm:p-7 space-y-4 shadow-2xl animate-scale-up max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-plus-circle text-pink-600 mr-2"></i> Novo Pedido</h3>
+                <button onclick="fecharModalNovo()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="form-pedido" onsubmit="adicionarPedido(event)" class="space-y-3.5 text-sm sm:text-base">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1 text-xs sm:text-sm">Nome do Cliente</label>
+                    <input type="text" id="input-cliente" required placeholder="Ex: Carlos Eduardo" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 sm:py-3 focus:outline-none focus:border-purple-600 text-sm sm:text-base">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1 text-xs sm:text-sm">Casquinha</label>
+                        <select id="input-tipo" onchange="toggleRecheio()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 sm:py-3 focus:outline-none focus:border-purple-600 text-sm sm:text-base">
+                            <option value="Comum">Comum</option>
+                            <option value="Recheada">Recheada</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1 text-xs sm:text-sm">Sabor da Base</label>
+                        <select id="input-sabor" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 sm:py-3 focus:outline-none focus:border-purple-600 text-sm sm:text-base">
+                            <option value="Açaí">Açaí</option>
+                            <option value="Mista">Mista</option>
+                            <option value="Creme">Creme</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1 text-xs sm:text-sm">Calda</label>
+                        <select id="input-calda" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 sm:py-3 focus:outline-none focus:border-purple-600 text-sm sm:text-base">
+                            <option value="Chocolate">Chocolate</option>
+                            <option value="Morango">Morango</option>
+                        </select>
+                    </div>
+                    <div id="grupo-recheio" class="hidden">
+                        <label class="block font-semibold text-gray-700 mb-1 text-xs sm:text-sm">Recheio</label>
+                        <select id="input-recheio" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 sm:py-3 focus:outline-none focus:border-purple-600 text-sm sm:text-base">
+                            <option value="Nutella">Nutella</option>
+                            <option value="Morango">Morango</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1 text-xs sm:text-sm">Observações (Opcional)</label>
+                    <textarea id="input-obs" rows="2" placeholder="Ex: Sem calda, bem cheia..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-purple-600 text-sm sm:text-base"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-purple-900 hover:bg-purple-800 text-white font-bold py-3 sm:py-3.5 rounded-xl shadow transition active:scale-95 mt-2 text-sm sm:text-base">
+                    Criar Pedido na Fila
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
